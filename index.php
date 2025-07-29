@@ -1,22 +1,20 @@
 <?php
 // Main entry point for the application (Front Controller)
 
-// Start the session for tracking login state
+// 1. ALWAYS START SESSION FIRST (or very early)
 session_start();
 
 // Error reporting for development
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Dynamically determine the base path of the application
-// This is crucial for correct routing and redirects in subdirectories
+// Dynamically determine the base path
 $scriptName = $_SERVER['SCRIPT_NAME'];
 $scriptDir = dirname($scriptName);
-// If index.php is directly in the web root, $scriptDir will be '/' or '\'.
-// We want to remove the trailing '/' if it exists, unless it's the only character.
 define('BASE_PATH', ($scriptDir === '/' || $scriptDir === '\\') ? '' : rtrim($scriptDir, '/'));
 
-// Require necessary files
+// 2. REQUIRE ALL NECESSARY CLASS DEFINITIONS HERE
+// This is critical to prevent __PHP_Incomplete_Class errors if objects are in session
 require_once 'config/database.php';
 require_once 'config/email.php';
 require_once 'models/Booking.php';
@@ -26,6 +24,9 @@ require_once 'models/CompanySettings.php';
 require_once 'models/EmailTemplate.php';
 require_once 'services/EmailService.php';
 require_once 'services/FormValidationService.php';
+require_once 'services/FormRenderer.php'; // Ensure all services are included
+require_once 'services/ValidationService.php'; // Ensure all services are included
+
 
 // Basic Routing
 $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'book';
@@ -45,18 +46,15 @@ if (file_exists($controllerFile)) {
 
     // Check if the method exists in the controller
     if (method_exists($controller, $action)) {
-        // Call the method, passing any additional URL parts as parameters
         $params = array_slice($urlParts, 2);
         call_user_func_array([$controller, $action], $params);
     } else {
-        // Handle 404 - Method not found
         http_response_code(404);
         require 'views/templates/header.php';
         echo '<div class="alert alert-danger"><h1>404 - Page Not Found</h1><p>The requested page could not be found.</p></div>';
         require 'views/templates/footer.php';
     }
 } else {
-    // Handle 404 - Controller not found
     http_response_code(404);
     require 'views/templates/header.php';
     echo '<div class="alert alert-danger"><h1>404 - Controller Not Found</h1><p>The requested resource could not be found.</p></div>';

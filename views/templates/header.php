@@ -287,10 +287,10 @@
                                     <i class="bi bi-calendar-check me-2"></i>Manage Bookings
                                 </a></li>
                             <?php
-                            // Check if user_permissions is an array before using in_array
+                            // FIX: Ensure user_permissions is an array before using it in in_array
                             $userPermissions = isset($_SESSION['user_permissions']) && is_array($_SESSION['user_permissions']) ? $_SESSION['user_permissions'] : [];
                             ?>
-                            <?php if (in_array('manage_forms', $userPermissions)): // Line 286 ?>
+                            <?php if (in_array('manage_forms', $userPermissions)): // This is line 286 or similar ?>
                                 <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/form-builder">
                                         <i class="bi bi-ui-checks me-2"></i>Form Builder
                                     </a></li>
