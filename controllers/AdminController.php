@@ -2,7 +2,12 @@
 // Enhanced Admin Controller with comprehensive CMS features
 
 require_once 'services/EmailService.php';
-
+// DEBUG: Dump session data on every admin request
+//session_start();
+//echo '<h2>Current $_SESSION data:</h2>';
+//echo '<pre>';
+//var_dump($_SESSION);
+//echo '</pre>';
 class AdminController {
     private $userModel;
     private $bookingModel;
@@ -318,7 +323,7 @@ class AdminController {
                 $_SESSION['user_role']        = $user['role'];
                 // CRITICAL: Ensure 'permissions' is always an array.
                 // If $user['permissions'] is not set or is not an array, default to empty array.
-                $_SESSION['user_permissions'] = is_array($user['permissions']) ? $user['permissions'] : [];
+                $_SESSION['user_permissions'] = isset($user['permissions']) ? (array)$user['permissions'] : [];
 
                 header('Location: ' . BASE_PATH . '/admin');
                 exit;
