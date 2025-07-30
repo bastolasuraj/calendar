@@ -31,7 +31,7 @@ class EmailController {
             $groupedTemplates[$template['type']][] = $template;
         }
 
-        require 'views/admin/email_templates.php';
+        require 'views/admin/email-templates.php';
     }
 
     public function create() {

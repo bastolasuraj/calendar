@@ -1,6 +1,6 @@
 <?php
 // Main entry point for the application (Front Controller)
-phpinfo();
+
 // Start the session for tracking login state
 session_start();
 
@@ -36,8 +36,48 @@ $url = isset($_GET['url']) ? rtrim($_GET['url'], '/') : 'book';
 $url = filter_var($url, FILTER_SANITIZE_URL);
 $urlParts = explode('/', $url);
 
-// Determine the controller
-$controllerName = !empty($urlParts[0]) ? ucfirst($urlParts[0]) . 'Controller' : 'BookController';
+$controllerName = '';
+$action = 'index'; // Default action if none specified
+$params = [];
+
+// Determine controller, action, and parameters
+if (!empty($urlParts[0])) {
+    $firstSegment = $urlParts[0];
+    $secondSegment = $urlParts[1] ?? null;
+
+    if ($firstSegment === 'admin') {
+        // Handle specific admin sub-routes that map to other controllers
+        if ($secondSegment === 'company-settings') {
+            $controllerName = 'CompanyController';
+            $action = 'index'; // CompanyController's index method handles the main settings view
+            $params = array_slice($urlParts, 2);
+        } elseif ($secondSegment === 'email-templates') {
+            $controllerName = 'EmailController';
+            $action = 'index'; // EmailController's index method handles the templates list
+            $params = array_slice($urlParts, 2);
+        } elseif ($secondSegment === 'form-builder') {
+            $controllerName = 'FormBuilderController';
+            $action = 'index'; // FormBuilderController's index method handles the form builder
+            $params = array_slice($urlParts, 2);
+        } else {
+            // For other /admin/xxx routes (like /admin or /admin/users, /admin/bookings, /admin/analytics)
+            // these still map to AdminController
+            $controllerName = 'AdminController';
+            $action = $secondSegment ?: 'index'; // Default to 'index' if no action specified (e.g., just /admin)
+            $params = array_slice($urlParts, 2);
+        }
+    } else {
+        // For non-admin top-level routes (e.g., /book, /view)
+        $controllerName = ucfirst($firstSegment) . 'Controller';
+        $action = $secondSegment ?: 'index';
+        $params = array_slice($urlParts, 2);
+    }
+} else {
+    // Default route if no segments are provided (e.g., just /cal/)
+    $controllerName = 'BookController';
+    $action = 'index';
+}
+
 $controllerFile = 'controllers/' . $controllerName . '.php';
 
 if (file_exists($controllerFile)) {
@@ -132,10 +172,8 @@ if (file_exists($controllerFile)) {
     }
 
     if ($controller) {
-        $action = isset($urlParts[1]) ? $urlParts[1] : 'index';
-
+        // The $action and $params are now already determined above
         if (method_exists($controller, $action)) {
-            $params = array_slice($urlParts, 2);
             call_user_func_array([$controller, $action], $params);
         } else {
             http_response_code(404);

@@ -142,7 +142,7 @@ class AdminController {
         // Make the user model available to the view for permission checks
         $user = $this->userModel;
 
-        require 'views/admin/bookings.php';
+        require __DIR__ .'/../views/admin/company-settings.php'; // This is line 145
     }
 
     public function exportBookings() {
@@ -187,7 +187,6 @@ class AdminController {
             return;
         }
 
-        // Get pagination and filter parameters
         $page = (int)($_GET['page'] ?? 1);
         $filters = [
             'role' => $_GET['role'] ?? '',
@@ -195,19 +194,17 @@ class AdminController {
             'search' => $_GET['search'] ?? ''
         ];
 
-        // --- IMPORTANT FIX HERE ---
-        // Ensure $usersData is always an array, even if the model returns null/empty
+        // Fetch all users with pagination and filters
         $usersData = $this->userModel->getAllUsers($page, 25, $filters);
 
-        // Make sure $allUsers is set for the view.
-        // It should be $usersData['users'] as returned by getAllUsers.
-        // Also ensure $usersData['total'] and $usersData['pages'] are passed.
-        $allUsers = $usersData['users'] ?? []; // Provide a default empty array if null
+        // Convert the MongoDB Cursor to a plain PHP array immediately after fetching.
+        // This allows multiple iterations and checks.
+        $allUsers = $usersData['users']->toArray(); // FIX: Convert cursor to array here
+
         $totalUsers = $usersData['total'] ?? 0;
         $currentPage = $usersData['page'] ?? 1;
         $totalPages = $usersData['pages'] ?? 1;
 
-        // Make the user model available to the view for permission checks
         $user = $this->userModel;
 
         require 'views/admin/users.php';

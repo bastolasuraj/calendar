@@ -24,7 +24,7 @@ class FormBuilderController {
         $forms = $this->formConfig->getAllConfigurations();
         $activeForm = $this->formConfig->getActiveConfiguration();
 
-        require 'views/admin/form_builder.php';
+        require 'views/admin/form-builder.php';
     }
 
     public function create() {
