@@ -142,7 +142,7 @@ class AdminController {
         // Make the user model available to the view for permission checks
         $user = $this->userModel;
 
-        require __DIR__ .'/../views/admin/company-settings.php'; // This is line 145
+        require __DIR__ . '/../views/admin/company_settings.php'; // This is line 145
     }
 
     public function exportBookings() {

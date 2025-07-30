@@ -23,7 +23,7 @@ class CompanyController {
         // Get all settings formatted for display
         $settings = $this->companySettings->getFormattedSettings();
 
-        require 'views/admin/company-settings.php';
+        require 'views/admin/company_settings.php';
     }
 
     public function update() {
