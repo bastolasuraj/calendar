@@ -1,6 +1,11 @@
 <?php
 // Enhanced Book Controller with dynamic form support
-
+require_once 'services/EmailService.php';
+require_once 'models/User.php'; // Ensure User model is included
+require_once 'models/Booking.php'; // Ensure Booking model is included
+require_once 'models/FormConfiguration.php'; // Ensure FormConfiguration model is included
+require_once 'models/EmailTemplate.php'; // Ensure EmailTemplate model is included
+require_once 'models/CompanySettings.php'; // Ensure CompanySettings model is included
 class BookController {
     private $formConfig;
     private $bookingModel;
@@ -20,7 +25,7 @@ class BookController {
         }
 
         // Get active form configuration
-        $activeForm = $this->formConfig->getActive();
+        $activeForm = $this->formConfig->getActiveConfiguration();
 
         if (!$activeForm) {
             require 'views/templates/header.php';
@@ -47,7 +52,7 @@ class BookController {
 
             // Validate required fields
             if (empty($formData) || empty($bookingDateTime)) {
-                header('Location: ' . BASE_PATH . '/book?error=missingdata');
+                header('Location: /book?error=missingdata');
                 exit;
             }
 
@@ -60,11 +65,11 @@ class BookController {
             } else {
                 $errors = $result['errors'] ?? ['general' => 'Booking creation failed'];
                 $errorMsg = urlencode(implode(', ', $errors));
-                header('Location: ' . BASE_PATH . '/book?error=createfailed&details=' . $errorMsg);
+                header('Location: /book?error=createfailed&details=' . $errorMsg);
                 exit;
             }
         } else {
-            header('Location: ' . BASE_PATH . '/book');
+            header('Location: /book');
             exit;
         }
     }
@@ -201,19 +206,19 @@ class BookController {
     public function preview() {
         // Preview form without submitting (for testing)
         if (!isset($_SESSION['user_id']) || !in_array('manage_forms', $_SESSION['user_permissions'] ?? [])) {
-            header('Location: ' . BASE_PATH . '/book');
+            header('Location: /book');
             exit;
         }
 
         $formId = $_GET['form_id'] ?? '';
         if (empty($formId)) {
-            header('Location: ' . BASE_PATH . '/admin/form-builder');
+            header('Location: /admin/form-builder');
             exit;
         }
 
         $formConfig = $this->formConfig->getConfigurationById($formId);
         if (!$formConfig) {
-            header('Location: ' . BASE_PATH . '/admin/form-builder?error=formnotfound');
+            header('Location: /admin/form-builder?error=formnotfound');
             exit;
         }
 

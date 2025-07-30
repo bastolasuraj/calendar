@@ -188,7 +188,7 @@
 
         /* Admin specific styles */
         <?php if (isset($_SESSION['user_id'])):
-         var_dump($_SESSION);
+//         var_dump($_SESSION);
 
          ?>
         .admin-nav {

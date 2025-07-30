@@ -315,10 +315,10 @@
                 </div>
 
                 <!-- Pagination -->
-                <?php if ($bookingsData['total_pages'] > 1): ?>
+                <?php if ($bookingsData['pages'] > 1): ?>
                     <nav aria-label="Bookings pagination">
                         <ul class="pagination justify-content-center">
-                            <?php for ($i = 1; $i <= $bookingsData['total_pages']; $i++): ?>
+                            <?php for ($i = 1; $i <= $bookingsData['pages']; $i++): ?>
                                 <li class="page-item <?php echo $bookingsData['page'] == $i ? 'active' : ''; ?>">
                                     <a class="page-link" href="?page=<?php echo $i; ?>&<?php echo http_build_query($filters); ?>">
                                         <?php echo $i; ?>

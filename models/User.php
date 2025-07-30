@@ -218,8 +218,7 @@ class User {
                 return false;
             }
 
-            return in_array($permission, $user['permissions'] ?? []);
-
+            return in_array($permission, (array) $user['permissions']);
         } catch (Exception $e) {
             error_log('Permission check error: ' . $e->getMessage());
             return false;
