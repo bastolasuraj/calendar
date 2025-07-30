@@ -18,28 +18,34 @@ class BookController {
     }
 
     public function index() {
-        // Check if system is in maintenance mode
+        // Maintenance mode check
         if ($this->companySettings->isMaintenanceMode()) {
             require 'views/maintenance.php';
             return;
         }
 
-        // Get active form configuration
+        // Fetch form configuration
         $activeForm = $this->formConfig->getActiveConfiguration();
-
         if (!$activeForm) {
-            require 'views/templates/header.php';
-            echo '<div class="alert alert-warning"><h2>Form Not Available</h2><p>The booking form is currently being configured. Please check back later.</p></div>';
-            require 'views/templates/footer.php';
-            return;
+            header('Location: /admin/form_builder?error=formnotfound');
+            exit;
         }
 
-        // Get company settings for branding
-        $companyName = $this->companySettings->getCompanyName();
-        $workingHours = $this->companySettings->getWorkingHours();
+        // Convert MongoDB BSONArray to PHP array if needed
+        if (isset($activeForm['fields']) && $activeForm['fields'] instanceof \MongoDB\Model\BSONArray) {
+            $activeForm['fields'] = iterator_to_array($activeForm['fields']);
+        }
 
+        // Company info for header and view
+        $companyName        = $this->companySettings->getCompanyName();
+        $companyDescription = $this->companySettings->get('company_description', '');
+        $workingHours       = $this->companySettings->getWorkingHours();
+        $isPreview          = true;
+
+        // Load the booking view
         require 'views/book/index.php';
     }
+
 
     public function create() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -212,13 +218,13 @@ class BookController {
 
         $formId = $_GET['form_id'] ?? '';
         if (empty($formId)) {
-            header('Location: /admin/form-builder');
+            header('Location: /admin/form_builder');
             exit;
         }
 
         $formConfig = $this->formConfig->getConfigurationById($formId);
         if (!$formConfig) {
-            header('Location: /admin/form-builder?error=formnotfound');
+            header('Location: /admin/form_builder?error=formnotfound');
             exit;
         }
 

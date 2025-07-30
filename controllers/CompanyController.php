@@ -23,6 +23,14 @@ class CompanyController {
         // Get all settings formatted for display
         $settings = $this->companySettings->getFormattedSettings();
 
+        // Ensure keys accessed in view are safely handled, especially for initial load
+        // The getFormattedSettings() method should ideally provide default values,
+        // but adding null coalescing operator in the view is also a good practice.
+        // For the logo, explicitly check if it exists in the array
+        if (!isset($settings['branding']['logo'])) {
+            $settings['branding']['logo'] = '';
+        }
+
         require 'views/admin/company_settings.php';
     }
 
@@ -37,7 +45,7 @@ class CompanyController {
         }
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: ' . BASE_PATH . '/admin/company-settings');
+            header('Location: ' . BASE_PATH . '/admin/company_settings');
             exit;
         }
 
@@ -82,10 +90,15 @@ class CompanyController {
             if (isset($_POST['working_hours_end'])) {
                 $updates['working_hours_end'] = trim($_POST['working_hours_end']);
             }
-            if (isset($_POST['slot_duration_hours'])) {
-                $updates['slot_duration_hours'] = (int)$_POST['slot_duration_hours'];
+            // FIX: Ensure slot_duration is cast to int or appropriate type
+            if (isset($_POST['slot_duration'])) { // Changed from slot_duration_hours based on view
+                $updates['slot_duration_hours'] = (int)$_POST['slot_duration'];
             }
             if (isset($_POST['working_days'])) {
+                // Assuming working_days comes as an array from the form.
+                // If it's checkboxes, multiple values may be received under the same name.
+                // If it's a single input, it might be a comma-separated string.
+                // You might need more robust handling here depending on the form input type.
                 $updates['working_days'] = json_encode($_POST['working_days']);
             }
 
@@ -96,53 +109,91 @@ class CompanyController {
             if (isset($_POST['min_advance_booking_hours'])) {
                 $updates['min_advance_booking_hours'] = (int)$_POST['min_advance_booking_hours'];
             }
-            if (isset($_POST['require_booking_approval'])) {
-                $updates['require_booking_approval'] = (bool)$_POST['require_booking_approval'];
+            // FIX: Match names from view
+            if (isset($_POST['cancellation_hours_before'])) {
+                $updates['cancellation_hours'] = (int)$_POST['cancellation_hours_before'];
             }
-            if (isset($_POST['allow_booking_updates'])) {
-                $updates['allow_booking_updates'] = (bool)$_POST['allow_booking_updates'];
+            if (isset($_POST['max_concurrent_bookings'])) {
+                $updates['max_concurrent_bookings'] = (int)$_POST['max_concurrent_bookings'];
+            }
+            if (isset($_POST['booking_buffer_minutes'])) {
+                $updates['booking_buffer_minutes'] = (int)$_POST['booking_buffer_minutes'];
             }
 
-            // Email Settings
+            // Email Settings (from view's form names)
+            // The `email_from_name`, `email_from_email`, `email_reply_to`
+            // should be handled as `from_name`, `from_email` etc. based on `EmailConfig.php`.
+            // The `EmailService` expects settings from `CompanySettings::getEmailSettings()`.
+            // So these should map to general company settings if they are global or dedicated email settings.
+            // For now, these are not directly handled in the provided CompanySettings::setMultiple method,
+            // but the keys in the `updates` array should match the keys in `CompanySettings::get/set`.
             if (isset($_POST['email_from_name'])) {
-                $updates['email_from_name'] = trim($_POST['email_from_name']);
+                $updates['from_name'] = trim($_POST['email_from_name']);
             }
             if (isset($_POST['email_from_email'])) {
-                $updates['email_from_email'] = trim($_POST['email_from_email']);
+                $updates['from_email'] = trim($_POST['email_from_email']);
             }
             if (isset($_POST['email_reply_to'])) {
-                $updates['email_reply_to'] = trim($_POST['email_reply_to']);
+                $updates['reply_to'] = trim($_POST['email_reply_to']);
             }
 
-            // Notification Settings
-            if (isset($_POST['notify_admin_new_booking'])) {
-                $updates['notify_admin_new_booking'] = (bool)$_POST['notify_admin_new_booking'];
+            // Notification Settings (from view's form names)
+            if (isset($_POST['send_confirmation_emails'])) { // matches `send_confirmation_emails`
+                $updates['notify_user_confirmation'] = (bool)$_POST['send_confirmation_emails'];
             }
-            if (isset($_POST['notify_user_confirmation'])) {
-                $updates['notify_user_confirmation'] = (bool)$_POST['notify_user_confirmation'];
+            if (isset($_POST['send_reminder_emails'])) { // matches `send_reminder_emails`
+                $updates['notify_user_reminder'] = (bool)$_POST['send_reminder_emails'];
             }
-            if (isset($_POST['notify_user_status_update'])) {
-                $updates['notify_user_status_update'] = (bool)$_POST['notify_user_status_update'];
+            if (isset($_POST['reminder_hours_before'])) { // matches `reminder_hours_before`
+                $updates['reminder_hours_before'] = (int)$_POST['reminder_hours_before'];
+            }
+            // assuming `admin_new_booking` and `admin_booking_update` are not set from this form explicitly
+
+            // Terms and Conditions
+            if (isset($_POST['booking_terms'])) {
+                $updates['booking_terms'] = trim($_POST['booking_terms']);
+            }
+
+            // Booking Preferences (from view's form names)
+            if (isset($_POST['auto_approve_bookings'])) { // matches `auto_approve_bookings`
+                $updates['auto_approve'] = (bool)$_POST['auto_approve_bookings'];
+            }
+            if (isset($_POST['require_approval'])) { // matches `require_approval`
+                $updates['require_booking_approval'] = (bool)$_POST['require_approval'];
+            }
+            if (isset($_POST['enable_public_calendar'])) { // matches `enable_public_calendar`
+                $updates['show_public_calendar'] = (bool)$_POST['enable_public_calendar'];
+            }
+            if (isset($_POST['enable_user_updates'])) { // matches `enable_user_updates`
+                $updates['allow_booking_updates'] = (bool)$_POST['enable_user_updates'];
+            }
+            if (isset($_POST['enable_user_cancellations'])) { // matches `enable_user_cancellations`
+                $updates['allow_cancellation'] = (bool)$_POST['enable_user_cancellations'];
             }
 
             // System Settings
             if (isset($_POST['timezone'])) {
                 $updates['timezone'] = trim($_POST['timezone']);
             }
-            if (isset($_POST['maintenance_mode'])) {
-                $updates['maintenance_mode'] = (bool)$_POST['maintenance_mode'];
+            if (isset($_POST['currency'])) { // matches `currency`
+                $updates['currency'] = trim($_POST['currency']);
             }
+            if (isset($_POST['font_family'])) { // matches `font_family`
+                $updates['font_family'] = trim($_POST['font_family']);
+            }
+            // `maintenance_mode` is not in this form, assuming it's handled elsewhere.
+
 
             // Save all updates
             if ($this->companySettings->setMultiple($updates)) {
-                header('Location: ' . BASE_PATH . '/admin/company-settings?success=updated');
+                header('Location: ' . BASE_PATH . '/admin/company_settings?success=updated');
             } else {
-                header('Location: ' . BASE_PATH . '/admin/company-settings?error=updatefailed');
+                header('Location: ' . BASE_PATH . '/admin/company_settings?error=updatefailed');
             }
 
         } catch (Exception $e) {
             error_log('Company settings update error: ' . $e->getMessage());
-            header('Location: ' . BASE_PATH . '/admin/company-settings?error=systemerror');
+            header('Location: ' . BASE_PATH . '/admin/company_settings?error=systemerror');
         }
         exit;
     }
@@ -233,13 +284,13 @@ class CompanyController {
                 // Reinitialize defaults
                 $this->companySettings->initializeDefaults();
 
-                header('Location: ' . BASE_PATH . '/admin/company-settings?success=reset');
+                header('Location: ' . BASE_PATH . '/admin/company_settings?success=reset');
             } catch (Exception $e) {
                 error_log('Settings reset error: ' . $e->getMessage());
-                header('Location: ' . BASE_PATH . '/admin/company-settings?error=resetfailed');
+                header('Location: ' . BASE_PATH . '/admin/company_settings?error=resetfailed');
             }
         } else {
-            header('Location: ' . BASE_PATH . '/admin/company-settings');
+            header('Location: ' . BASE_PATH . '/admin/company_settings');
         }
         exit;
     }
@@ -333,4 +384,3 @@ class CompanyController {
         require 'views/templates/footer.php';
     }
 }
-?>

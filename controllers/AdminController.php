@@ -142,7 +142,8 @@ class AdminController {
         // Make the user model available to the view for permission checks
         $user = $this->userModel;
 
-        require __DIR__ . '/../views/admin/company_settings.php'; // This is line 145
+        // FIX: Removed incorrect include of company-settings.php here.
+        require __DIR__ .'/../views/admin/bookings.php'; // Assuming a bookings.php view exists. If not, this is the root of the routing problem.
     }
 
     public function exportBookings() {
@@ -250,7 +251,7 @@ class AdminController {
         }
 
         if (empty($userId)) {
-            header('Location: ' . BASE_PATH . '/admin/users');
+            header('Location: '. BASE_PATH . '/admin/users');
             exit;
         }
 

@@ -22,16 +22,19 @@ class EmailController {
             return;
         }
 
-        // Get all email templates
-        $templates = $this->emailTemplate->getAllTemplates();
+        // Get all email templates and convert to array to allow multiple iterations
+        $templates = $this->emailTemplate->getAllTemplates()->toArray();
 
-        // Group templates by type
-        $groupedTemplates = [];
-        foreach ($templates as $template) {
-            $groupedTemplates[$template['type']][] = $template;
-        }
+        // Define template types for display (used in the left panel)
+        $templateTypes = [
+            EmailTemplate::TYPE_BOOKING_CONFIRMATION => ['name' => 'Booking Confirmation', 'description' => 'Email sent to customer upon booking submission'],
+            EmailTemplate::TYPE_STATUS_UPDATE => ['name' => 'Booking Status Update', 'description' => 'Email sent to customer when booking status changes'],
+            EmailTemplate::TYPE_BOOKING_REMINDER => ['name' => 'Booking Reminder', 'description' => 'Email sent to customer before their scheduled booking'],
+            EmailTemplate::TYPE_ADMIN_NOTIFICATION => ['name' => 'Admin Notification', 'description' => 'Email sent to admin for new booking requests'],
+        ];
 
-        require 'views/admin/email_templates.php';
+
+        require 'views/admin/email-templates.php';
     }
 
     public function create() {
@@ -325,4 +328,3 @@ class EmailController {
         require 'views/templates/footer.php';
     }
 }
-?>

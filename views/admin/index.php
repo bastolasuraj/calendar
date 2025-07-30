@@ -96,7 +96,7 @@
                 <div class="row">
                     <?php if ($user->hasPermission($_SESSION['user_id'], 'manage_form_builder')): ?>
                         <div class="col-md-4 mb-3">
-                            <a href="<?php echo BASE_PATH; ?>/admin/form-builder" class="text-decoration-none">
+                            <a href="<?php echo BASE_PATH; ?>/admin/form_builder" class="text-decoration-none">
                                 <div class="d-flex align-items-center p-3 border rounded hover-shadow">
                                     <i class="bi bi-ui-checks fs-3 me-3 text-primary"></i>
                                     <div>
@@ -151,7 +151,7 @@
                         <i class="bi bi-check-circle-fill text-success me-2"></i>Active Form Configuration
                     </h5>
                     <?php if ($user->hasPermission($_SESSION['user_id'], 'manage_form_builder')): ?>
-                        <a href="<?php echo BASE_PATH; ?>/admin/form-builder" class="btn btn-sm btn-outline-primary">
+                        <a href="<?php echo BASE_PATH; ?>/admin/form_builder" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil me-1"></i>Edit
                         </a>
                     <?php endif; ?>

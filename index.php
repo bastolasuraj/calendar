@@ -47,15 +47,15 @@ if (!empty($urlParts[0])) {
 
     if ($firstSegment === 'admin') {
         // Handle specific admin sub-routes that map to other controllers
-        if ($secondSegment === 'company-settings') {
+        if ($secondSegment === 'company_settings') {
             $controllerName = 'CompanyController';
             $action = 'index'; // CompanyController's index method handles the main settings view
             $params = array_slice($urlParts, 2);
-        } elseif ($secondSegment === 'email-templates') {
+        } elseif ($secondSegment === 'email_templates') {
             $controllerName = 'EmailController';
             $action = 'index'; // EmailController's index method handles the templates list
             $params = array_slice($urlParts, 2);
-        } elseif ($secondSegment === 'form-builder') {
+        } elseif ($secondSegment === 'form_builder') {
             $controllerName = 'FormBuilderController';
             $action = 'index'; // FormBuilderController's index method handles the form builder
             $params = array_slice($urlParts, 2);

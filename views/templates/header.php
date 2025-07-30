@@ -291,17 +291,17 @@
                             $userPermissions = isset($_SESSION['user_permissions']) && is_array($_SESSION['user_permissions']) ? $_SESSION['user_permissions'] : [];
                             ?>
                             <?php if (in_array('manage_forms', $userPermissions)): // This is line 286 or similar ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/form-builder">
+                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/form_builder">
                                         <i class="bi bi-ui-checks me-2"></i>Form Builder
                                     </a></li>
                             <?php endif; ?>
                             <?php if (in_array('manage_settings', $userPermissions)): ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/company-settings">
+                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/company_settings">
                                         <i class="bi bi-building me-2"></i>Company Settings
                                     </a></li>
                             <?php endif; ?>
                             <?php if (in_array('manage_templates', $userPermissions)): ?>
-                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/email-templates">
+                                <li><a class="dropdown-item" href="<?php echo BASE_PATH; ?>/admin/email_templates">
                                         <i class="bi bi-envelope me-2"></i>Email Templates
                                     </a></li>
                             <?php endif; ?>
