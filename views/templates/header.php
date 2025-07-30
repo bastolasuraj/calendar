@@ -241,7 +241,7 @@
     </div>
 </div>
 
-<nav class="navbar navbar-expand-lg <?php echo isset($_SESSION['user_id']) ? 'admin-nav' : 'navbar-light'; ?> mb-4">
+<nav class="navbar navbar-expand-lg <?php echo isset($_SESSION['user_id']) ? 'admin-nav' : 'navbar-dark'; ?> mb-4">
     <div class="container-fluid">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo BASE_PATH; ?>/">
             <?php
@@ -272,7 +272,7 @@
                 </li>
             </ul>
 
-            <ul class="navbar-nav">
+            <ul class="navbar-nav bg-dark">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button"
