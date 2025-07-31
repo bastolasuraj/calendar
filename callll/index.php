@@ -57,9 +57,8 @@ if (!empty($urlParts[0])) {
             $params = array_slice($urlParts, 2);
         } elseif ($secondSegment === 'form_builder') {
             $controllerName = 'FormBuilderController';
-            // allow /admin/form_builder/<action>/<id> to dispatch properly
-            $action = $urlParts[2] ?? 'index';
-            $params = array_slice($urlParts, 3);
+            $action = 'index'; // FormBuilderController's index method handles the form builder
+            $params = array_slice($urlParts, 2);
         } else {
             // For other /admin/xxx routes (like /admin or /admin/users, /admin/bookings, /admin/analytics)
             // these still map to AdminController

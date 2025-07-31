@@ -31,7 +31,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>/views/assets/css/admin.css">
+    <link rel="stylesheet" href="views/assets/css/admin.css">
 
     <!-- Dynamic CSS Variables -->
     <style>

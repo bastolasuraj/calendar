@@ -691,6 +691,6 @@
         }, 10000);
     });
 </script>
-<script src="<?php echo BASE_PATH; ?>/views/assets/js/form-builder.js"></script>
+
 </body>
 </html>

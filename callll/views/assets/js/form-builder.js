@@ -1,3 +1,8 @@
+/**
+ * Dynamic Form Builder JavaScript
+ * Handles drag-and-drop form creation and field management
+ */
+
 class FormBuilder {
     constructor() {
         this.currentForm = null;
@@ -33,7 +38,7 @@ class FormBuilder {
 
     async loadFieldTypes() {
         try {
-            const response = await fetch(`${BASE_PATH_JS}/admin/form_builder/fieldTypes`);
+            const response = await fetch('/formbuilder/fieldTypes');
             this.fieldTypes = await response.json();
             this.renderFieldPalette();
         } catch (error) {
@@ -156,7 +161,7 @@ class FormBuilder {
     }
 
     renderFieldItem(field, index) {
-        const fieldType = this.fieldTypes[field.type] || { label: field.type, icon: 'fas fa-question' };
+        const fieldType = this.fieldTypes[field.type] || {label: field.type, icon: 'fas fa-question'};
         const requiredBadge = field.required ? '<span class="badge bg-danger ms-2">Required</span>' : '';
 
         return `
@@ -173,13 +178,13 @@ class FormBuilder {
                         </div>
                     </div>
                     <div class="field-actions">
-                        <button type="button" class="btn btn-sm btn-outline-primary"
-                                onclick="formBuilder.editField(${index})"
+                        <button type="button" class="btn btn-sm btn-outline-primary" 
+                                onclick="formBuilder.editField(${index})" 
                                 title="Edit Field">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button type="button" class="btn btn-sm btn-outline-danger"
-                                onclick="formBuilder.deleteField(${index})"
+                        <button type="button" class="btn btn-sm btn-outline-danger" 
+                                onclick="formBuilder.deleteField(${index})" 
                                 title="Delete Field">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -323,7 +328,7 @@ class FormBuilder {
                     propertiesHTML += `
                         <div class="mb-3">
                             <label class="form-label">Minimum Length</label>
-                            <input type="number" class="form-control" id="prop_min_length"
+                            <input type="number" class="form-control" id="prop_min_length" 
                                    value="${field.validation?.min_length || ''}" min="0">
                         </div>
                     `;
@@ -333,7 +338,7 @@ class FormBuilder {
                     propertiesHTML += `
                         <div class="mb-3">
                             <label class="form-label">Maximum Length</label>
-                            <input type="number" class="form-control" id="prop_max_length"
+                            <input type="number" class="form-control" id="prop_max_length" 
                                    value="${field.validation?.max_length || ''}" min="1">
                         </div>
                     `;
@@ -343,7 +348,7 @@ class FormBuilder {
                     propertiesHTML += `
                         <div class="mb-3">
                             <label class="form-label">Validation Pattern (RegEx)</label>
-                            <input type="text" class="form-control" id="prop_pattern"
+                            <input type="text" class="form-control" id="prop_pattern" 
                                    value="${field.validation?.pattern || ''}"
                                    placeholder="^[a-zA-Z0-9]+$">
                         </div>
@@ -354,7 +359,7 @@ class FormBuilder {
                     propertiesHTML += `
                         <div class="mb-3">
                             <label class="form-label">Minimum Value</label>
-                            <input type="number" class="form-control" id="prop_min"
+                            <input type="number" class="form-control" id="prop_min" 
                                    value="${field.validation?.min || ''}">
                         </div>
                     `;
@@ -364,7 +369,7 @@ class FormBuilder {
                     propertiesHTML += `
                         <div class="mb-3">
                             <label class="form-label">Maximum Value</label>
-                            <input type="number" class="form-control" id="prop_max"
+                            <input type="number" class="form-control" id="prop_max" 
                                    value="${field.validation?.max || ''}">
                         </div>
                     `;
@@ -587,7 +592,7 @@ class FormBuilder {
 
         const url = this.currentForm ?
             `/formbuilder/update/${this.currentForm._id}` :
-            `${BASE_PATH_JS}/admin/form_builder/create`;
+            '/formbuilder/create';
 
         this.showLoading();
 
@@ -722,15 +727,15 @@ class FormBuilder {
 }
 
 // Global functions for onclick handlers
-window.selectForm = function(formId) {
+window.selectForm = function (formId) {
     window.formBuilder.selectForm(formId);
 };
 
-window.editForm = function(formId) {
+window.editForm = function (formId) {
     window.formBuilder.selectForm(formId);
 };
 
-window.previewForm = function(formId) {
+window.previewForm = function (formId) {
     fetch(`${BASE_PATH_JS}/admin/form_builder/preview/${formId}`)
         .then(response => response.json())
         .then(data => {
@@ -744,10 +749,10 @@ window.previewForm = function(formId) {
         });
 };
 
-window.activateForm = function(formId) {
+window.activateForm = function (formId) {
     if (!confirm('Set this form as the active booking form?')) return;
 
-    fetch(`/formbuilder/activate/${formId}`, { method: 'POST' })
+    fetch(`/formbuilder/activate/${formId}`, {method: 'POST'})
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -758,14 +763,14 @@ window.activateForm = function(formId) {
         });
 };
 
-window.cloneForm = function(formId) {
+window.cloneForm = function (formId) {
     const newName = prompt('Enter name for the cloned form:');
     if (!newName) return;
 
     fetch(`/formbuilder/clone_form/${formId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: newName})
     })
         .then(response => response.json())
         .then(data => {
@@ -777,11 +782,10 @@ window.cloneForm = function(formId) {
         });
 };
 
-window.deleteForm = function(formId) {
+window.deleteForm = function (formId) {
     if (!confirm('Are you sure you want to delete this form? This action cannot be undone.')) return;
 
-    fetch(`${BASE_PATH_JS}/admin/form_builder/delete/${formId}`, { method: 'POST' })
-        .then(response => response.json())
+    fetch(`${BASE_PATH_JS}/admin/form_builder/delete/${formId}`, {method: 'POST'}).then(response => response.json())
         .then(data => {
             if (data.success) {
                 location.reload();
@@ -791,7 +795,7 @@ window.deleteForm = function(formId) {
         });
 };
 
-window.viewStats = function(formId) {
+window.viewStats = function (formId) {
     fetch(`${BASE_PATH_JS}/admin/form_builder/getAnalytics/${formId}`)
         .then(response => response.json())
         .then(data => {
@@ -804,23 +808,23 @@ window.viewStats = function(formId) {
         });
 };
 
-window.createNewForm = function() {
+window.createNewForm = function () {
     window.formBuilder.createNewForm();
 };
 
-window.saveForm = function() {
+window.saveForm = function () {
     window.formBuilder.saveForm();
 };
 
-window.previewCurrentForm = function() {
+window.previewCurrentForm = function () {
     window.formBuilder.previewCurrentForm();
 };
 
-window.saveFieldConfig = function() {
+window.saveFieldConfig = function () {
     window.formBuilder.saveFieldConfig();
 };
 
 // Initialize form builder when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     window.formBuilder = new FormBuilder();
 });
